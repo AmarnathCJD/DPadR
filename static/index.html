@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#f5f6f8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
+<title>ADB Remote</title>
+<link rel="stylesheet" href="style.css">
+<script>
+  (function() {
+    var saved = localStorage.getItem('theme');
+    var theme = saved || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.setAttribute('data-theme', theme);
+  })();
+</script>
+</head>
+<body>
+  <header>
+    <button id="themeToggle" class="theme-toggle" type="button" title="Toggle theme" aria-label="Toggle theme">
+      <span class="icon-moon">☾</span><span class="icon-sun">☀</span>
+    </button>
+    <div class="title-row"><h1>ADB Remote</h1></div>
+    <p class="subtitle">Send key events to a connected device</p>
+    <div class="device-bar">
+      <select id="device" aria-label="Select device"></select>
+      <button id="refresh" type="button" title="Refresh device list" aria-label="Refresh">↻</button>
+    </div>
+    <div class="device-bar display-bar" id="displayBar" hidden>
+      <select id="display" aria-label="Select display"></select>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  </header>
+
+  <main>
+    <div class="dpad" role="group" aria-label="D-pad">
+      <button class="key key-up"    data-key="UP"    aria-label="Up">▲</button>
+      <button class="key key-left"  data-key="LEFT"  aria-label="Left">◀</button>
+      <button class="key key-ok"    data-key="OK"    aria-label="OK">OK</button>
+      <button class="key key-right" data-key="RIGHT" aria-label="Right">▶</button>
+      <button class="key key-down"  data-key="DOWN"  aria-label="Down">▼</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="nav-row" role="group" aria-label="Navigation">
+      <button class="key key-nav" data-key="BACK">Back</button>
+      <button class="key key-nav" data-key="HOME">Home</button>
+      <button class="key key-nav" data-key="RECENTS">Recents</button>
+    </div>
+
+    <div class="mode-row" role="group" aria-label="Input modes">
+      <button class="mode-btn" id="toggleNumpad" type="button" aria-pressed="false" aria-controls="numpad">
+        <span class="mode-icon">123</span><span>Numpad</span>
+      </button>
+    </div>
+
+    <div class="panel" id="numpad" hidden>
+      <div class="numpad-grid">
+        <button class="key key-num" data-key="1">1</button>
+        <button class="key key-num" data-key="2">2</button>
+        <button class="key key-num" data-key="3">3</button>
+        <button class="key key-num" data-key="4">4</button>
+        <button class="key key-num" data-key="5">5</button>
+        <button class="key key-num" data-key="6">6</button>
+        <button class="key key-num" data-key="7">7</button>
+        <button class="key key-num" data-key="8">8</button>
+        <button class="key key-num" data-key="9">9</button>
+        <button class="key key-num key-num-symbol" data-key="STAR">∗</button>
+        <button class="key key-num" data-key="0">0</button>
+        <button class="key key-num key-num-symbol" data-key="DEL" aria-label="Delete">⌫</button>
+      </div>
+    </div>
+
+    <p class="hint">
+      <kbd>↑</kbd><kbd>↓</kbd><kbd>←</kbd><kbd>→</kbd> D-pad &nbsp;·&nbsp;
+      <kbd>Enter</kbd> OK &nbsp;·&nbsp;
+      <kbd>Esc</kbd> Back &nbsp;·&nbsp;
+      <kbd>H</kbd> Home &nbsp;·&nbsp;
+      <kbd>R</kbd> Recents
+    </p>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
