@@ -133,6 +133,61 @@ func SendKeyEvent(serial string, keycode int, displayID int) error {
 	return err
 }
 
+// adbInputTextEscape prepares a string for `input text "..."`. The Android
+// `input` command treats certain characters specially:
+//   - space → %s   (literal space gets dropped otherwise)
+//   - '"' '\\' '`' '$' need shell-level escaping since we wrap in double quotes
+//   - non-ASCII control chars are stripped to avoid breaking the shell line
+func adbInputTextEscape(s string) string {
+	var b strings.Builder
+	for _, r := range s {
+		switch r {
+		case ' ':
+			b.WriteString("%s")
+		case '"', '\\', '`', '$':
+			b.WriteByte('\\')
+			b.WriteRune(r)
+		case '\n', '\r':
+			// newlines: drop. Use KEYCODE_ENTER for line breaks separately.
+		default:
+			if r < 0x20 || r == 0x7f {
+				continue
+			}
+			b.WriteRune(r)
+		}
+	}
+	return b.String()
+}
+
+// SendText types a string into the focused text field via `input text`.
+// Long inputs are chunked at rune boundaries so multi-byte runes aren't split.
+// `input text` on Android caps at ~500 chars in practice, and very long strings
+// can stall the shell on some devices.
+func SendText(serial, text string, displayID int) error {
+	const chunkRunes = 200
+	runes := []rune(text)
+	for i := 0; i < len(runes); i += chunkRunes {
+		end := i + chunkRunes
+		if end > len(runes) {
+			end = len(runes)
+		}
+		piece := adbInputTextEscape(string(runes[i:end]))
+		if piece == "" {
+			continue
+		}
+		var cmd string
+		if displayID >= 0 {
+			cmd = fmt.Sprintf(`input -d %d text "%s"`, displayID, piece)
+		} else {
+			cmd = fmt.Sprintf(`input text "%s"`, piece)
+		}
+		if _, err := runShell(serial, cmd, 5*time.Second); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // ListDisplays parses `dumpsys display` output for logical display IDs.
 // We look at the "mDisplayStates=" array which lists each logical display id,
 // then mirror to the per-display blocks for friendly names.
