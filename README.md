@@ -3,8 +3,8 @@
 A tiny D-pad remote for any ADB-connected Android device. Single Go binary, web UI, no dependencies. Optional Flutter Android app over Bluetooth.
 
 <p align="center">
-  <img src="assets/home.png" alt="Connect screen" width="320">
-  <img src="assets/remote.png" alt="Remote screen" width="320">
+  <img src="assets/home.jpg" alt="Connect screen" width="320">
+  <img src="assets/remote.jpg" alt="Remote screen" width="320">
 </p>
 
 ## Features
